@@ -491,7 +491,7 @@ function loginTeacher() {
         document.getElementById('pw-error').classList.add('hidden');
         showScreen('screen-teacher');
         unlockScroll();
-        listenSubmissions();
+        listenSubmissions(true);
     } else {
         document.getElementById('pw-error').classList.remove('hidden');
     }
@@ -661,20 +661,28 @@ function renderReferenceSkewer() {
 
 // ── 교사 대시보드 ────────────────────────────────────────
 let submissionsListenerAttached = false;
+let submissionsRef = null;
 
-function listenSubmissions() {
-    if (!firebaseReady || submissionsListenerAttached) return;
+function listenSubmissions(force = false) {
+    if (!firebaseReady || !db) return;
+    if (submissionsListenerAttached && !force) return;
+
+    if (submissionsRef) {
+        submissionsRef.off();
+    }
+
     submissionsListenerAttached = true;
-    db.ref('submissions').on('value', snap => {
-        try {
-            const list = [];
-            snap.forEach(child => list.push({ key: child.key, ...child.val() }));
-            list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            window.allSubmissions = list;
-            renderSubmissions(list);
-        } catch (error) {
-            console.warn('제출 목록 실시간 반영 실패:', error);
-        }
+    submissionsRef = db.ref('submissions');
+
+    submissionsRef.on('value', snap => {
+        const list = [];
+        snap.forEach(child => list.push({ key: child.key, ...child.val() }));
+        list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        window.allSubmissions = list;
+        renderSubmissions(list);
+        console.log('교사 화면 제출 목록 갱신:', list.length, list);
+    }, error => {
+        console.warn('제출 목록 읽기 실패:', error);
     });
 }
 
@@ -702,6 +710,7 @@ function renderSubmissions(list) {
     if (!container) return;
 
     const currentList = Array.isArray(list) ? list : [];
+    window.latestSubmissions = currentList;
     safeSetText('stat-total', currentList.length);
 
     if (currentList.length === 0) {
@@ -710,19 +719,19 @@ function renderSubmissions(list) {
                 아직 제출한 학생이 없어요 👀
             </div>
         `;
-        window.latestSubmissions = [];
         return;
     }
 
-    container.innerHTML = currentList.map((s, index) => {
+    container.innerHTML = currentList.map((s) => {
         const items = Array.isArray(s.items) ? s.items : buildItemsFromCounts(s.rice, s.sausage);
         const safeName = String(s.name || '이름 없음').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const submittedTime = s.timestamp
             ? new Date(s.timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
             : '';
+        const safeKey = String(s.key || '').replace(/"/g, '&quot;');
 
         return `
-            <button onclick="openSubmissionPreview(${index})" class="group bg-white border-2 border-blue-100 hover:border-blue-300 hover:bg-blue-50 rounded-3xl p-4 shadow-sm hover:shadow-md transition-all active:scale-[0.98] text-left flex flex-col gap-3 min-h-[220px]">
+            <button type="button" onclick="openSubmissionPreviewByKey('${safeKey}')" class="group bg-white border-2 border-blue-100 hover:border-blue-300 hover:bg-blue-50 rounded-3xl p-4 shadow-sm hover:shadow-md transition-all active:scale-[0.98] text-left flex flex-col gap-3 min-h-[220px]">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-lg font-black text-gray-800 truncate">${safeName}</div>
@@ -753,8 +762,11 @@ function renderSubmissions(list) {
             </button>
         `;
     }).join('');
-
-    window.latestSubmissions = currentList;
+}
+function openSubmissionPreviewByKey(key) {
+    const list = window.latestSubmissions || [];
+    const index = list.findIndex(s => s.key === key);
+    openSubmissionPreview(index);
 }
 
 function buildItemsFromCounts(rice, sausage) {
@@ -791,8 +803,13 @@ function closeSubmissionPreview() {
 function clearSubmissions() {
     if (!firebaseReady) return;
     if (!confirm('모든 제출 기록을 삭제할까요?')) return;
-    db.ref('submissions').remove();
-    window.latestSubmissions = [];
+    db.ref('submissions').remove().then(() => {
+        window.allSubmissions = [];
+        window.latestSubmissions = [];
+        renderSubmissions([]);
+    }).catch(error => {
+        console.warn('제출 기록 삭제 실패:', error);
+    });
 }
 
 // ── 스크롤 잠금 ──────────────────────────────────────────
@@ -856,12 +873,17 @@ function applySettings() {
 
     if (firebaseReady) {
         db.ref('submissions').remove()
-            .then(() => db.ref('targetRatio').set({
-                rice: r,
-                sausage: s,
-                roundId: currentRoundId,
-                changedAt: firebase.database.ServerValue.TIMESTAMP
-            }))
+            .then(() => {
+                window.allSubmissions = [];
+                window.latestSubmissions = [];
+                renderSubmissions([]);
+                return db.ref('targetRatio').set({
+                    rice: r,
+                    sausage: s,
+                    roundId: currentRoundId,
+                    changedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+            })
             .catch(error => {
                 console.warn('비율 저장 또는 제출 초기화 실패:', error);
                 alert('비율은 화면에 적용됐지만, Firebase 저장에 실패했어요. 규칙 또는 연결 상태를 확인해주세요.');
