@@ -320,7 +320,7 @@
         <div id="feedback-icon" class="text-6xl mb-3"></div>
         <div id="feedback-text" class="text-2xl font-black text-gray-800 text-center"></div>
         <div id="feedback-subtext" class="text-base font-bold text-gray-500 text-center mt-2"></div>
-        <button onclick="document.getElementById('feedback-overlay').classList.add('hidden')"
+        <button onclick="document.getElementById('feedback-overlay').classList.add('hidden'); document.body.style.overflow = '';"
                 class="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full font-black text-sm transition-colors">확인</button>
     </div>
 </div>
@@ -550,6 +550,7 @@ function checkAnswer() {
 
     if (submittedRatioKey === currentRatioKey) {
         overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
         icon.innerText = '⏳';
         text.innerText = '이미 제출했어요!';
         text.style.color = '#f97316';
@@ -575,6 +576,7 @@ function checkAnswer() {
     }
 
     overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
     icon.innerText = '📨';
     text.innerText = '선생님께 전달되었어요!';
     text.style.color = '#2563eb';
@@ -735,10 +737,12 @@ function openSubmissionPreview(index) {
     document.getElementById('preview-student-ratio').innerText = `떡 ${submission.rice}개 · 소시지 ${submission.sausage}개 · 비율 ${submission.rice}:${submission.sausage}`;
     document.getElementById('preview-skewer-items').innerHTML = createSkewerPreviewHtml(items, 'large');
     document.getElementById('submission-preview-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeSubmissionPreview() {
     document.getElementById('submission-preview-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
 }
 
 function clearSubmissions() {
@@ -753,10 +757,12 @@ function openSettings() {
     document.getElementById('input-rice').value = targetRice;
     document.getElementById('input-sausage').value = targetSausage;
     document.getElementById('settings-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeSettings() {
     document.getElementById('settings-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
 }
 
 function applySettings() {
