@@ -437,6 +437,23 @@ try {
                 console.warn('비율 실시간 반영 실패:', error);
             }
         });
+
+        // 제출 목록은 교사 로그인 여부와 상관없이 항상 실시간으로 받아둡니다.
+        db.ref('submissions').on('value', snap => {
+            try {
+                const list = [];
+                snap.forEach(child => list.push({ key: child.key, ...child.val() }));
+                list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                window.allSubmissions = list;
+                window.latestSubmissions = list;
+                renderSubmissions(list);
+                console.log('제출 목록 실시간 수신:', list.length, list);
+            } catch (error) {
+                console.warn('제출 목록 렌더 실패:', error);
+            }
+        }, error => {
+            console.warn('제출 목록 읽기 실패:', error);
+        });
     } else {
         document.getElementById('firebase-warning').classList.remove('hidden');
     }
@@ -664,26 +681,8 @@ let submissionsListenerAttached = false;
 let submissionsRef = null;
 
 function listenSubmissions(force = false) {
-    if (!firebaseReady || !db) return;
-    if (submissionsListenerAttached && !force) return;
-
-    if (submissionsRef) {
-        submissionsRef.off();
-    }
-
-    submissionsListenerAttached = true;
-    submissionsRef = db.ref('submissions');
-
-    submissionsRef.on('value', snap => {
-        const list = [];
-        snap.forEach(child => list.push({ key: child.key, ...child.val() }));
-        list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        window.allSubmissions = list;
-        renderSubmissions(list);
-        console.log('교사 화면 제출 목록 갱신:', list.length, list);
-    }, error => {
-        console.warn('제출 목록 읽기 실패:', error);
-    });
+    renderSubmissions(window.allSubmissions || []);
+    console.log('교사 화면 제출 목록 다시 그리기:', (window.allSubmissions || []).length, window.allSubmissions || []);
 }
 
 function createSkewerPreviewHtml(items, size = 'small') {
