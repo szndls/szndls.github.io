@@ -348,7 +348,7 @@
      MODAL: 비율 설정
 ══════════════════════════════════════ -->
 <div id="settings-overlay" class="hidden fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-[2000]">
-    <div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center border-4 border-orange-400 max-w-[90%] w-80 animate-pop">
+    <div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center border-4 border-orange-400 max-w-[90%] w-80 animate-pop overflow-y-auto" style="max-height:90vh">
         <div class="text-3xl mb-2">⚙️</div>
         <h2 class="text-lg font-black text-orange-800 mb-1">비율 설정</h2>
         <p class="text-xs text-gray-400 mb-5 text-center">변경하면 모든 학생 화면에 즉시 반영됩니다.</p>
@@ -364,8 +364,8 @@
             </div>
         </div>
         <div class="flex gap-3 w-full">
-            <button onclick="closeSettings()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-xl text-sm border-b-2 border-gray-400 active:border-b-0">취소</button>
-            <button onclick="applySettings()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-black py-2 rounded-xl text-sm border-b-2 border-orange-700 active:border-b-0">적용</button>
+            <button ontouchend="event.preventDefault(); closeSettings();" onclick="closeSettings()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-xl text-sm border-b-2 border-gray-400 active:border-b-0">취소</button>
+            <button ontouchend="event.preventDefault(); applySettings();" onclick="applySettings()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-black py-2 rounded-xl text-sm border-b-2 border-orange-700 active:border-b-0">적용</button>
         </div>
     </div>
 </div>
@@ -395,9 +395,17 @@ let targetRice = 2;
 let targetSausage = 3;
 let skewerList = [];
 let studentName = '';
-let submittedRatioKey = null;
+let currentRoundId = 'initial';
+let submittedRoundId = null;
 let db = null;
 let firebaseReady = false;
+
+window.allSubmissions = [];
+
+function safeSetText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+}
 
 // ── Firebase 초기화 ──────────────────────────────────────
 try {
@@ -408,18 +416,25 @@ try {
 
         // 교사가 설정한 비율을 모든 학생 화면에 실시간 반영
         db.ref('targetRatio').on('value', snap => {
-            const val = snap.val();
-            if (val && val.rice && val.sausage) {
-                const previousRatioKey = `${targetRice}:${targetSausage}`;
-                targetRice = val.rice;
-                targetSausage = val.sausage;
-                const currentRatioKey = `${targetRice}:${targetSausage}`;
-                if (previousRatioKey !== currentRatioKey) {
-                    submittedRatioKey = null;
-                    resetGame();
+            try {
+                const val = snap.val();
+                if (val && val.rice && val.sausage) {
+                    const previousRoundId = currentRoundId;
+                    targetRice = val.rice;
+                    targetSausage = val.sausage;
+                    currentRoundId = val.roundId || val.changedAt || `${targetRice}:${targetSausage}`;
+
+                    if (previousRoundId !== currentRoundId) {
+                        submittedRoundId = null;
+                        resetGame();
+                    }
+
+                    renderReferenceSkewer();
+                    safeSetText('stat-ratio', `${targetRice}:${targetSausage}`);
+                    renderSubmissions(window.allSubmissions || []);
                 }
-                renderReferenceSkewer();
-                document.getElementById('stat-ratio').innerText = currentRatioKey;
+            } catch (error) {
+                console.warn('비율 실시간 반영 실패:', error);
             }
         });
     } else {
@@ -438,6 +453,7 @@ function showScreen(id) {
 
 function goToLogin() {
     showScreen('screen-login');
+    unlockScroll();
     document.getElementById('student-login-form').classList.add('hidden');
     document.getElementById('teacher-login-form').classList.add('hidden');
     document.getElementById('pw-error').classList.add('hidden');
@@ -460,7 +476,7 @@ function startStudentGame() {
     const name = document.getElementById('student-name-input').value.trim();
     if (!name) { document.getElementById('student-name-input').focus(); return; }
     studentName = name;
-    submittedRatioKey = null;
+    submittedRoundId = null;
     document.getElementById('student-name-display').innerText = `👤 ${name}`;
     document.getElementById('student-name-input').value = '';
     resetGame();
@@ -474,6 +490,7 @@ function loginTeacher() {
         document.getElementById('teacher-pw-input').value = '';
         document.getElementById('pw-error').classList.add('hidden');
         showScreen('screen-teacher');
+        unlockScroll();
         listenSubmissions();
     } else {
         document.getElementById('pw-error').classList.remove('hidden');
@@ -542,13 +559,14 @@ function checkAnswer() {
     if (r === 0 && s === 0) return;
 
     const currentRatioKey = `${targetRice}:${targetSausage}`;
+    const roundId = currentRoundId || currentRatioKey;
 
     const overlay = document.getElementById('feedback-overlay');
     const icon    = document.getElementById('feedback-icon');
     const text    = document.getElementById('feedback-text');
     const sub     = document.getElementById('feedback-subtext');
 
-    if (submittedRatioKey === currentRatioKey) {
+    if (submittedRoundId === roundId) {
         overlay.classList.remove('hidden');
         lockScroll();
         icon.innerText = '⏳';
@@ -558,29 +576,46 @@ function checkAnswer() {
         return;
     }
 
-    const isCorrect = r > 0 && s > 0 && (r * targetSausage === s * targetRice);
-
-    if (firebaseReady && studentName) {
-        db.ref('submissions').push({
-            name: studentName,
-            rice: r,
-            sausage: s,
-            items: skewerList.slice(),
-            isCorrect,
-            ratioRice: targetRice,
-            ratioSausage: targetSausage,
-            ratioKey: currentRatioKey,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        submittedRatioKey = currentRatioKey;
+    if (!firebaseReady || !studentName) {
+        overlay.classList.remove('hidden');
+        lockScroll();
+        icon.innerText = '⚠️';
+        text.innerText = '제출할 수 없어요';
+        text.style.color = '#dc2626';
+        sub.innerText = 'Firebase 연결이나 이름 입력 상태를 확인해주세요.';
+        return;
     }
 
-    overlay.classList.remove('hidden');
-    lockScroll();
-    icon.innerText = '📨';
-    text.innerText = '선생님께 전달되었어요!';
-    text.style.color = '#2563eb';
-    sub.innerText = '이 비율에서는 한 번만 제출할 수 있어요.';
+    const isCorrect = r > 0 && s > 0 && (r * targetSausage === s * targetRice);
+
+    db.ref('submissions').push({
+        name: studentName,
+        rice: r,
+        sausage: s,
+        items: skewerList.slice(),
+        isCorrect,
+        ratioRice: targetRice,
+        ratioSausage: targetSausage,
+        ratioKey: currentRatioKey,
+        roundId: roundId,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+    }).then(() => {
+        submittedRoundId = roundId;
+        overlay.classList.remove('hidden');
+        lockScroll();
+        icon.innerText = '📨';
+        text.innerText = '선생님께 전달되었어요!';
+        text.style.color = '#2563eb';
+        sub.innerText = '이 비율에서는 한 번만 제출할 수 있어요.';
+    }).catch(error => {
+        console.warn('학생 제출 저장 실패:', error);
+        overlay.classList.remove('hidden');
+        lockScroll();
+        icon.innerText = '⚠️';
+        text.innerText = '제출 저장 실패';
+        text.style.color = '#dc2626';
+        sub.innerText = 'Firebase 규칙이나 인터넷 연결 상태를 확인해주세요.';
+    });
 }
 
 function resetGame() {
@@ -631,10 +666,15 @@ function listenSubmissions() {
     if (!firebaseReady || submissionsListenerAttached) return;
     submissionsListenerAttached = true;
     db.ref('submissions').on('value', snap => {
-        const list = [];
-        snap.forEach(child => list.push({ key: child.key, ...child.val() }));
-        list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        renderSubmissions(list);
+        try {
+            const list = [];
+            snap.forEach(child => list.push({ key: child.key, ...child.val() }));
+            list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            window.allSubmissions = list;
+            renderSubmissions(list);
+        } catch (error) {
+            console.warn('제출 목록 실시간 반영 실패:', error);
+        }
     });
 }
 
@@ -660,10 +700,14 @@ function createSkewerPreviewHtml(items, size = 'small') {
 function renderSubmissions(list) {
     const container = document.getElementById('submissions-list');
     const noSub     = document.getElementById('no-submissions');
-    const currentRatioKey = `${targetRice}:${targetSausage}`;
-    const currentList = list.filter(s => !s.ratioKey || s.ratioKey === currentRatioKey);
+    if (!container || !noSub) return;
 
-    document.getElementById('stat-total').innerText = currentList.length;
+    // 비율을 바꿀 때마다 submissions를 삭제하므로,
+    // 현재 DB에 남아 있는 제출은 모두 지금 활동의 제출로 봅니다.
+    // roundId 필터를 걸면 교사/학생 화면의 실시간 반영 순서 차이 때문에 제출이 숨겨질 수 있습니다.
+    const currentList = Array.isArray(list) ? list : [];
+
+    safeSetText('stat-total', currentList.length);
 
     if (currentList.length === 0) {
         container.innerHTML = '';
@@ -727,22 +771,25 @@ function buildItemsFromCounts(rice, sausage) {
 function openSubmissionPreview(index) {
     const list = window.latestSubmissions || [];
     const submission = list[index];
-    if (!submission) return;
+    if (!submission) {
+        console.warn('크게 볼 제출 데이터를 찾지 못했습니다:', index, list);
+        return;
+    }
 
     const items = Array.isArray(submission.items)
         ? submission.items
         : buildItemsFromCounts(submission.rice, submission.sausage);
 
     document.getElementById('preview-student-name').innerText = `${submission.name || '이름 없음'} 학생의 꼬치`;
-    document.getElementById('preview-student-ratio').innerText = `떡 ${submission.rice}개 · 소시지 ${submission.sausage}개 · 비율 ${submission.rice}:${submission.sausage}`;
+    document.getElementById('preview-student-ratio').innerText = `떡 ${submission.rice || 0}개 · 소시지 ${submission.sausage || 0}개 · 비율 ${submission.rice || 0}:${submission.sausage || 0}`;
     document.getElementById('preview-skewer-items').innerHTML = createSkewerPreviewHtml(items, 'large');
     document.getElementById('submission-preview-overlay').classList.remove('hidden');
-    lockScroll();
+    document.body.style.overflow = 'hidden';
 }
 
 function closeSubmissionPreview() {
     document.getElementById('submission-preview-overlay').classList.add('hidden');
-    unlockScroll();
+    document.body.style.overflow = '';
 }
 
 function clearSubmissions() {
@@ -752,27 +799,24 @@ function clearSubmissions() {
     window.latestSubmissions = [];
 }
 
-// ── 스크롤 잠금 (iOS fixed 좌표 버그 방지) ───────────────
-let _scrollLockY = 0;
+// ── 스크롤 잠금 ──────────────────────────────────────────
+let _stScrollTop = 0;
 function lockScroll() {
-    _scrollLockY = window.scrollY || 0;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${_scrollLockY}px`;
-    document.body.style.left = '0';
-    document.body.style.right = '0';
     document.body.style.overflow = 'hidden';
     const st = document.getElementById('screen-teacher');
-    if (st) { st.style.overflow = 'hidden'; st.style.pointerEvents = 'none'; }
+    if (st) {
+        _stScrollTop = st.scrollTop;
+        st.style.overflow = 'hidden';
+    }
 }
 function unlockScroll() {
-    const st = document.getElementById('screen-teacher');
-    if (st) { st.style.overflow = ''; st.style.pointerEvents = ''; }
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
     document.body.style.overflow = '';
-    window.scrollTo(0, _scrollLockY);
+    const st = document.getElementById('screen-teacher');
+    if (st) {
+        st.style.overflow = '';
+        st.style.pointerEvents = '';
+        st.scrollTop = _stScrollTop;
+    }
 }
 
 // ── 비율 설정 모달 ───────────────────────────────────────
@@ -799,21 +843,27 @@ function applySettings() {
 
     targetRice = r;
     targetSausage = s;
-    submittedRatioKey = null;
+    currentRoundId = `round-${Date.now()}`;
+    submittedRoundId = null;
     window.latestSubmissions = [];
 
-    // 먼저 화면을 바로 갱신하고 모달을 닫아, Firebase 오류가 있어도 창이 남지 않게 합니다.
-    renderReferenceSkewer();
-    renderSubmissions([]);
-    document.getElementById('stat-ratio').innerText = `${r}:${s}`;
-    resetGame();
-    closeSettings();
+    try {
+        renderReferenceSkewer();
+        renderSubmissions([]);
+        document.getElementById('stat-ratio').innerText = `${r}:${s}`;
+        resetGame();
+    } catch(e) {
+        console.error('applySettings 렌더 오류:', e);
+    } finally {
+        closeSettings();
+    }
 
     if (firebaseReady) {
         db.ref('submissions').remove()
             .then(() => db.ref('targetRatio').set({
                 rice: r,
                 sausage: s,
+                roundId: currentRoundId,
                 changedAt: firebase.database.ServerValue.TIMESTAMP
             }))
             .catch(error => {
