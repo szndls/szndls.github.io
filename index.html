@@ -320,7 +320,7 @@
         <div id="feedback-icon" class="text-6xl mb-3"></div>
         <div id="feedback-text" class="text-2xl font-black text-gray-800 text-center"></div>
         <div id="feedback-subtext" class="text-base font-bold text-gray-500 text-center mt-2"></div>
-        <button onclick="document.getElementById('feedback-overlay').classList.add('hidden'); document.body.style.overflow = '';"
+        <button onclick="document.getElementById('feedback-overlay').classList.add('hidden'); unlockScroll();"
                 class="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full font-black text-sm transition-colors">확인</button>
     </div>
 </div>
@@ -550,7 +550,7 @@ function checkAnswer() {
 
     if (submittedRatioKey === currentRatioKey) {
         overlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        lockScroll();
         icon.innerText = '⏳';
         text.innerText = '이미 제출했어요!';
         text.style.color = '#f97316';
@@ -576,7 +576,7 @@ function checkAnswer() {
     }
 
     overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    lockScroll();
     icon.innerText = '📨';
     text.innerText = '선생님께 전달되었어요!';
     text.style.color = '#2563eb';
@@ -737,16 +737,12 @@ function openSubmissionPreview(index) {
     document.getElementById('preview-student-ratio').innerText = `떡 ${submission.rice}개 · 소시지 ${submission.sausage}개 · 비율 ${submission.rice}:${submission.sausage}`;
     document.getElementById('preview-skewer-items').innerHTML = createSkewerPreviewHtml(items, 'large');
     document.getElementById('submission-preview-overlay').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    document.getElementById('screen-teacher').style.overflow = 'hidden';
-    document.getElementById('screen-teacher').style.pointerEvents = 'none';
+    lockScroll();
 }
 
 function closeSubmissionPreview() {
     document.getElementById('submission-preview-overlay').classList.add('hidden');
-    document.body.style.overflow = '';
-    document.getElementById('screen-teacher').style.overflow = '';
-    document.getElementById('screen-teacher').style.pointerEvents = '';
+    unlockScroll();
 }
 
 function clearSubmissions() {
@@ -756,21 +752,40 @@ function clearSubmissions() {
     window.latestSubmissions = [];
 }
 
+// ── 스크롤 잠금 (iOS fixed 좌표 버그 방지) ───────────────
+let _scrollLockY = 0;
+function lockScroll() {
+    _scrollLockY = window.scrollY || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${_scrollLockY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
+    const st = document.getElementById('screen-teacher');
+    if (st) { st.style.overflow = 'hidden'; st.style.pointerEvents = 'none'; }
+}
+function unlockScroll() {
+    const st = document.getElementById('screen-teacher');
+    if (st) { st.style.overflow = ''; st.style.pointerEvents = ''; }
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, _scrollLockY);
+}
+
 // ── 비율 설정 모달 ───────────────────────────────────────
 function openSettings() {
     document.getElementById('input-rice').value = targetRice;
     document.getElementById('input-sausage').value = targetSausage;
     document.getElementById('settings-overlay').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    document.getElementById('screen-teacher').style.overflow = 'hidden';
-    document.getElementById('screen-teacher').style.pointerEvents = 'none';
+    lockScroll();
 }
 
 function closeSettings() {
     document.getElementById('settings-overlay').classList.add('hidden');
-    document.body.style.overflow = '';
-    document.getElementById('screen-teacher').style.overflow = '';
-    document.getElementById('screen-teacher').style.pointerEvents = '';
+    unlockScroll();
 }
 
 function applySettings() {
@@ -894,6 +909,7 @@ function tCheckAnswer() {
     const text    = document.getElementById('feedback-text');
     const sub     = document.getElementById('feedback-subtext');
     overlay.classList.remove('hidden');
+    lockScroll();
     if (isCorrect) {
         icon.innerText = '✨'; text.innerText = '비의 성질 완성!'; text.style.color = '#16a34a';
         sub.innerText = `떡 ${r}개와 소시지 ${s}개는 ${targetRice}:${targetSausage}과 비율이 같아요.`;
