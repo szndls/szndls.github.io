@@ -738,11 +738,15 @@ function openSubmissionPreview(index) {
     document.getElementById('preview-skewer-items').innerHTML = createSkewerPreviewHtml(items, 'large');
     document.getElementById('submission-preview-overlay').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    document.getElementById('screen-teacher').style.overflow = 'hidden';
+    document.getElementById('screen-teacher').style.pointerEvents = 'none';
 }
 
 function closeSubmissionPreview() {
     document.getElementById('submission-preview-overlay').classList.add('hidden');
     document.body.style.overflow = '';
+    document.getElementById('screen-teacher').style.overflow = '';
+    document.getElementById('screen-teacher').style.pointerEvents = '';
 }
 
 function clearSubmissions() {
@@ -758,14 +762,19 @@ function openSettings() {
     document.getElementById('input-sausage').value = targetSausage;
     document.getElementById('settings-overlay').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    document.getElementById('screen-teacher').style.overflow = 'hidden';
+    document.getElementById('screen-teacher').style.pointerEvents = 'none';
 }
 
 function closeSettings() {
     document.getElementById('settings-overlay').classList.add('hidden');
     document.body.style.overflow = '';
+    document.getElementById('screen-teacher').style.overflow = '';
+    document.getElementById('screen-teacher').style.pointerEvents = '';
 }
 
 function applySettings() {
+    if (document.activeElement) document.activeElement.blur();
     const r = parseInt(document.getElementById('input-rice').value, 10);
     const s = parseInt(document.getElementById('input-sausage').value, 10);
     if (!r || !s || r < 1 || s < 1 || r > 20 || s > 20) {
