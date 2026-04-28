@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
-        body { font-family: 'Nanum Gothic', sans-serif; background-color: #fef3c7; touch-action: manipulation; user-select: none; }
+        body { font-family: 'Nanum Gothic', sans-serif; background-color: #fef3c7; touch-action: manipulation; user-select: none; -webkit-overflow-scrolling: touch; }
         .skewer-line {
             width: 8px; background: linear-gradient(to right, #d4a373, #bc8a5f);
             border-radius: 4px; height: 90%; position: absolute;
@@ -23,7 +23,7 @@
         .ingredient-item {
             cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative; z-index: 50; display: flex; align-items: center;
-            justify-content: center; flex: 1; width: 100%; max-height: 40%; overflow: hidden;
+            justify-content: center; flex: 1; width: 100%; min-height: 72px; max-height: 40%; overflow: hidden;
         }
         .ingredient-item:hover:not(.disabled) { transform: scale(1.02); filter: brightness(1.05); }
         .ingredient-item:active:not(.disabled) { transform: scale(0.95); }
@@ -56,12 +56,12 @@
         .screen.active { display: flex; }
     </style>
 </head>
-<body class="h-screen overflow-hidden text-gray-800">
+<body class="min-h-screen md:h-screen md:overflow-hidden text-gray-800">
 
 <!-- ══════════════════════════════════════
      SCREEN 1: 로그인
 ══════════════════════════════════════ -->
-<div id="screen-login" class="screen active h-screen flex-col items-center justify-center p-6 bg-amber-50">
+<div id="screen-login" class="screen active min-h-screen flex-col items-center justify-center p-6 bg-amber-50">
     <div class="text-center mb-8">
         <div class="text-6xl mb-3">🍡</div>
         <h1 class="text-2xl font-black text-orange-900">소떡소떡 비율 게임</h1>
@@ -124,7 +124,7 @@
 <!-- ══════════════════════════════════════
      SCREEN 2: 학생 게임
 ══════════════════════════════════════ -->
-<div id="screen-game" class="screen h-screen flex-col p-4 md:p-6 overflow-hidden">
+<div id="screen-game" class="screen min-h-screen md:h-screen flex-col p-4 md:p-6 md:overflow-hidden overflow-y-auto">
     <!-- Title -->
     <div class="flex items-center justify-between mb-2 md:mb-4 shrink-0 gap-2">
         <div class="flex-1 text-center">
@@ -140,9 +140,9 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
+    <div class="flex-1 flex flex-col md:flex-row gap-4 md:min-h-0">
         <!-- Left Column -->
-        <div class="w-full md:w-1/3 flex flex-col gap-3 min-h-0">
+        <div class="w-full md:w-1/3 flex flex-col gap-3 md:min-h-0">
             <div class="bg-white p-4 md:p-6 rounded-3xl border-2 border-orange-300 shadow-md relative flex flex-col justify-center min-h-[160px] md:min-h-[220px] shrink-0">
                 <h3 id="reference-title" class="font-bold text-orange-600 mb-2 text-center text-xs md:text-sm">기준 비율 (2:3)</h3>
                 <div id="reference-skewer-items" class="flex flex-col items-center space-y-1 relative flex-1 min-h-[100px] max-h-[140px]">
@@ -150,9 +150,9 @@
                 </div>
                 <p id="reference-ratio-display" class="text-center font-black text-xl md:text-2xl text-orange-700 mt-2">2 : 3</p>
             </div>
-            <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
+            <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-[180px] md:min-h-0 overflow-hidden">
                 <h2 class="text-xs md:text-sm font-black text-center mb-2 text-gray-700 shrink-0">🍽️ 재료 접시</h2>
-                <div class="flex flex-col gap-2 md:gap-3 flex-1 min-h-0 pb-1">
+                <div class="flex flex-col gap-2 md:gap-3 flex-1 md:min-h-0 pb-1">
                     <div id="rice-source" onclick="addToSkewer('rice')"
                          class="ingredient-item bg-white rounded-xl md:rounded-2xl border-2 md:border-4 border-orange-100 shadow-sm p-2 md:p-3">
                         <div class="text-gray-800 font-black fit-text select-none">떡</div>
@@ -166,7 +166,7 @@
         </div>
 
         <!-- Right Column -->
-        <div class="w-full md:w-2/3 flex flex-col min-h-0 relative">
+        <div class="w-full md:w-2/3 flex flex-col min-h-[360px] md:min-h-0 relative">
             <div class="absolute top-4 left-4 flex flex-col gap-3 stat-card">
                 <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
@@ -188,7 +188,7 @@
                 <button onclick="resetGame()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-1.5 rounded-lg transition-all text-xs border-b-2 border-gray-400 active:border-b-0 active:translate-y-0.5">다시 만들기</button>
                 <button onclick="checkAnswer()" class="bg-green-500 hover:bg-green-600 text-white font-black px-4 py-1.5 rounded-lg transition-all text-xs border-b-2 border-green-700 active:border-b-0 active:translate-y-0.5">꼬치 완성!</button>
             </div>
-            <div id="drop-zone" class="relative flex flex-col items-center justify-end w-full h-full bg-orange-50 rounded-[2.5rem] border-4 border-dashed border-orange-200 p-6 shadow-inner overflow-hidden">
+            <div id="drop-zone" class="relative flex flex-col items-center justify-end w-full h-full min-h-[320px] bg-orange-50 rounded-[2.5rem] border-4 border-dashed border-orange-200 p-6 shadow-inner overflow-hidden">
                 <div class="skewer-line"></div>
                 <div id="skewer-items" class="z-10 w-full flex flex-col-reverse items-center"></div>
                 <div id="drop-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none text-center p-10">
@@ -202,7 +202,7 @@
 <!-- ══════════════════════════════════════
      SCREEN 3: 교사 화면 (탭)
 ══════════════════════════════════════ -->
-<div id="screen-teacher" class="screen h-screen flex-col p-4 md:p-6 overflow-hidden bg-blue-50">
+<div id="screen-teacher" class="screen min-h-screen md:h-screen flex-col p-4 md:p-6 md:overflow-hidden overflow-y-auto bg-blue-50">
 
     <!-- 헤더 -->
     <div class="flex items-center justify-between mb-3 shrink-0 flex-wrap gap-2">
@@ -240,7 +240,7 @@
             </div>
         </div>
         <!-- 제출 목록 -->
-        <div class="flex-1 bg-white rounded-3xl border-2 border-blue-200 shadow-md overflow-hidden flex flex-col min-h-0">
+        <div class="flex-1 bg-white rounded-3xl border-2 border-blue-200 shadow-md overflow-hidden flex flex-col min-h-[400px] md:min-h-0">
             <div class="px-5 py-4 border-b border-blue-100 bg-blue-50 shrink-0">
                 <h2 class="text-sm font-black text-blue-900">학생 제출 카드</h2>
                 <p class="text-xs font-bold text-blue-400 mt-1">카드를 누르면 완성한 소떡소떡을 크게 볼 수 있어요.</p>
@@ -254,9 +254,9 @@
     </div>
 
     <!-- ── TAB: 소떡소떡 만들기 (교사용, t- 접두사) ── -->
-    <div id="teacher-tab-game" class="hidden flex-1 flex flex-col md:flex-row gap-4 min-h-0">
+    <div id="teacher-tab-game" class="hidden flex-1 flex flex-col md:flex-row gap-4 md:min-h-0">
         <!-- Left Column -->
-        <div class="w-full md:w-1/3 flex flex-col gap-3 min-h-0">
+        <div class="w-full md:w-1/3 flex flex-col gap-3 md:min-h-0">
             <div class="bg-white p-4 md:p-6 rounded-3xl border-2 border-orange-300 shadow-md relative flex flex-col justify-center min-h-[160px] md:min-h-[220px] shrink-0">
                 <h3 id="t-reference-title" class="font-bold text-orange-600 mb-2 text-center text-xs md:text-sm">기준 비율 (2:3)</h3>
                 <div id="t-reference-skewer-items" class="flex flex-col items-center space-y-1 relative flex-1 min-h-[100px] max-h-[140px]">
@@ -264,9 +264,9 @@
                 </div>
                 <p id="t-reference-ratio-display" class="text-center font-black text-xl md:text-2xl text-orange-700 mt-2">2 : 3</p>
             </div>
-            <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
+            <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-[180px] md:min-h-0 overflow-hidden">
                 <h2 class="text-xs md:text-sm font-black text-center mb-2 text-gray-700 shrink-0">🍽️ 재료 접시</h2>
-                <div class="flex flex-col gap-2 md:gap-3 flex-1 min-h-0 pb-1">
+                <div class="flex flex-col gap-2 md:gap-3 flex-1 md:min-h-0 pb-1">
                     <div id="t-rice-source" onclick="tAddToSkewer('rice')"
                          class="ingredient-item bg-white rounded-xl md:rounded-2xl border-2 md:border-4 border-orange-100 shadow-sm p-2 md:p-3">
                         <div class="text-gray-800 font-black fit-text select-none">떡</div>
@@ -279,7 +279,7 @@
             </div>
         </div>
         <!-- Right Column -->
-        <div class="w-full md:w-2/3 flex flex-col min-h-0 relative">
+        <div class="w-full md:w-2/3 flex flex-col min-h-[360px] md:min-h-0 relative">
             <div class="absolute top-4 left-4 flex flex-col gap-3 stat-card">
                 <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
