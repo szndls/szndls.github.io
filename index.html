@@ -431,7 +431,6 @@ try {
 
                     renderReferenceSkewer();
                     safeSetText('stat-ratio', `${targetRice}:${targetSausage}`);
-                    renderSubmissions(window.allSubmissions || []);
                 }
             } catch (error) {
                 console.warn('비율 실시간 반영 실패:', error);
@@ -679,10 +678,32 @@ function renderReferenceSkewer() {
 // ── 교사 대시보드 ────────────────────────────────────────
 let submissionsListenerAttached = false;
 let submissionsRef = null;
+let submissionsPollTimer = null;
+
+function refreshSubmissions() {
+    if (!firebaseReady || !db) return;
+
+    db.ref('submissions').once('value').then(snap => {
+        const list = [];
+        snap.forEach(child => list.push({ key: child.key, ...child.val() }));
+        list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        window.allSubmissions = list;
+        window.latestSubmissions = list;
+        renderSubmissions(list);
+        console.log('제출 목록 직접 갱신:', list.length, list);
+    }).catch(error => {
+        console.warn('제출 목록 직접 갱신 실패:', error);
+    });
+}
 
 function listenSubmissions(force = false) {
-    renderSubmissions(window.allSubmissions || []);
-    console.log('교사 화면 제출 목록 다시 그리기:', (window.allSubmissions || []).length, window.allSubmissions || []);
+    refreshSubmissions();
+
+    if (submissionsPollTimer) {
+        clearInterval(submissionsPollTimer);
+    }
+
+    submissionsPollTimer = setInterval(refreshSubmissions, 1000);
 }
 
 function createSkewerPreviewHtml(items, size = 'small') {
@@ -806,6 +827,7 @@ function clearSubmissions() {
         window.allSubmissions = [];
         window.latestSubmissions = [];
         renderSubmissions([]);
+        refreshSubmissions();
     }).catch(error => {
         console.warn('제출 기록 삭제 실패:', error);
     });
@@ -876,6 +898,7 @@ function applySettings() {
                 window.allSubmissions = [];
                 window.latestSubmissions = [];
                 renderSubmissions([]);
+                refreshSubmissions();
                 return db.ref('targetRatio').set({
                     rice: r,
                     sausage: s,
