@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -61,6 +62,7 @@
 <!-- ══════════════════════════════════════
      SCREEN 1: 로그인
 ══════════════════════════════════════ -->
+
 <div id="screen-login" class="screen active min-h-screen flex-col items-center justify-center p-6 bg-amber-50">
     <div class="text-center mb-8">
         <div class="text-6xl mb-3">🍡</div>
@@ -68,62 +70,66 @@
         <p class="text-orange-600 text-sm mt-1 font-bold">비의 성질을 활용해 꼬치를 만들어요!</p>
     </div>
 
-    <div class="flex gap-4 w-full max-w-sm">
-        <button onclick="showStudentLogin()"
-                class="flex-1 bg-white hover:bg-orange-50 border-4 border-orange-300 rounded-3xl p-6 flex flex-col items-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-95 border-b-[6px] border-b-orange-400">
-            <span class="text-4xl">🧑‍🎓</span>
-            <span class="font-black text-orange-800 text-lg">학생</span>
-            <span class="text-xs text-gray-400 font-bold">이름 입력 후 시작</span>
+```
+<div class="flex gap-4 w-full max-w-sm">
+    <button onclick="showStudentLogin()"
+            class="flex-1 bg-white hover:bg-orange-50 border-4 border-orange-300 rounded-3xl p-6 flex flex-col items-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-95 border-b-[6px] border-b-orange-400">
+        <span class="text-4xl">🧑‍🎓</span>
+        <span class="font-black text-orange-800 text-lg">학생</span>
+        <span class="text-xs text-gray-400 font-bold">이름 입력 후 시작</span>
+    </button>
+    <button onclick="showTeacherLogin()"
+            class="flex-1 bg-white hover:bg-blue-50 border-4 border-blue-300 rounded-3xl p-6 flex flex-col items-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-95 border-b-[6px] border-b-blue-400">
+        <span class="text-4xl">👩‍🏫</span>
+        <span class="font-black text-blue-800 text-lg">교사</span>
+        <span class="text-xs text-gray-400 font-bold">비밀번호 입력 후 진입</span>
+    </button>
+</div>
+
+<!-- 학생 이름 입력 -->
+<div id="student-login-form" class="hidden mt-5 w-full max-w-sm">
+    <div class="bg-white rounded-2xl border-2 border-orange-200 p-5 shadow-md animate-pop">
+        <label class="block text-sm font-black text-gray-700 mb-2">이름을 입력하세요</label>
+        <input id="student-name-input" type="text" maxlength="10" placeholder="예) 홍길동"
+               class="w-full border-2 border-orange-200 rounded-xl px-4 py-2 text-lg font-bold outline-none focus:border-orange-400 mb-3"
+               onkeydown="if(event.key==='Enter') startStudentGame()" />
+        <button onclick="startStudentGame()"
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-2 rounded-xl border-b-4 border-orange-700 active:border-b-0 active:translate-y-0.5 transition-all">
+            게임 시작!
         </button>
-        <button onclick="showTeacherLogin()"
-                class="flex-1 bg-white hover:bg-blue-50 border-4 border-blue-300 rounded-3xl p-6 flex flex-col items-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-95 border-b-[6px] border-b-blue-400">
-            <span class="text-4xl">👩‍🏫</span>
-            <span class="font-black text-blue-800 text-lg">교사</span>
-            <span class="text-xs text-gray-400 font-bold">비밀번호 입력 후 진입</span>
+    </div>
+</div>
+
+<!-- 교사 비밀번호 입력 -->
+<div id="teacher-login-form" class="hidden mt-5 w-full max-w-sm">
+    <div class="bg-white rounded-2xl border-2 border-blue-200 p-5 shadow-md animate-pop">
+        <label class="block text-sm font-black text-gray-700 mb-2">교사 비밀번호</label>
+        <input id="teacher-pw-input" type="password" placeholder="비밀번호 입력"
+               class="w-full border-2 border-blue-200 rounded-xl px-4 py-2 text-lg font-bold outline-none focus:border-blue-400 mb-3"
+               onkeydown="if(event.key==='Enter') loginTeacher()" />
+        <p id="pw-error" class="hidden text-red-500 text-xs font-bold mb-2 text-center">비밀번호가 틀렸습니다.</p>
+        <button onclick="loginTeacher()"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-2 rounded-xl border-b-4 border-blue-700 active:border-b-0 active:translate-y-0.5 transition-all">
+            대시보드 열기
         </button>
     </div>
+</div>
 
-    <!-- 학생 이름 입력 -->
-    <div id="student-login-form" class="hidden mt-5 w-full max-w-sm">
-        <div class="bg-white rounded-2xl border-2 border-orange-200 p-5 shadow-md animate-pop">
-            <label class="block text-sm font-black text-gray-700 mb-2">이름을 입력하세요</label>
-            <input id="student-name-input" type="text" maxlength="10" placeholder="예) 홍길동"
-                   class="w-full border-2 border-orange-200 rounded-xl px-4 py-2 text-lg font-bold outline-none focus:border-orange-400 mb-3"
-                   onkeydown="if(event.key==='Enter') startStudentGame()" />
-            <button onclick="startStudentGame()"
-                    class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-2 rounded-xl border-b-4 border-orange-700 active:border-b-0 active:translate-y-0.5 transition-all">
-                게임 시작!
-            </button>
-        </div>
+<!-- Firebase 미설정 경고 -->
+<div id="firebase-warning" class="hidden mt-5 w-full max-w-sm">
+    <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-4 text-sm text-red-700 font-bold text-center">
+        ⚠️ Firebase 설정이 필요합니다.<br>
+        <span class="text-xs font-normal">HTML 파일 상단의 firebaseConfig를 채워주세요.</span>
     </div>
+</div>
+```
 
-    <!-- 교사 비밀번호 입력 -->
-    <div id="teacher-login-form" class="hidden mt-5 w-full max-w-sm">
-        <div class="bg-white rounded-2xl border-2 border-blue-200 p-5 shadow-md animate-pop">
-            <label class="block text-sm font-black text-gray-700 mb-2">교사 비밀번호</label>
-            <input id="teacher-pw-input" type="password" placeholder="비밀번호 입력"
-                   class="w-full border-2 border-blue-200 rounded-xl px-4 py-2 text-lg font-bold outline-none focus:border-blue-400 mb-3"
-                   onkeydown="if(event.key==='Enter') loginTeacher()" />
-            <p id="pw-error" class="hidden text-red-500 text-xs font-bold mb-2 text-center">비밀번호가 틀렸습니다.</p>
-            <button onclick="loginTeacher()"
-                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-2 rounded-xl border-b-4 border-blue-700 active:border-b-0 active:translate-y-0.5 transition-all">
-                대시보드 열기
-            </button>
-        </div>
-    </div>
-
-    <!-- Firebase 미설정 경고 -->
-    <div id="firebase-warning" class="hidden mt-5 w-full max-w-sm">
-        <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-4 text-sm text-red-700 font-bold text-center">
-            ⚠️ Firebase 설정이 필요합니다.<br>
-            <span class="text-xs font-normal">HTML 파일 상단의 firebaseConfig를 채워주세요.</span>
-        </div>
-    </div>
 </div>
 
 <!-- ══════════════════════════════════════
      SCREEN 2: 학생 게임
 ══════════════════════════════════════ -->
+
 <div id="screen-game" class="screen min-h-screen md:h-screen flex-col p-4 md:p-6 md:overflow-hidden overflow-y-auto">
     <!-- Title -->
     <div class="flex items-center justify-between mb-2 md:mb-4 shrink-0 gap-2">
@@ -139,182 +145,190 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col md:flex-row gap-4 md:min-h-0">
-        <!-- Left Column -->
-        <div class="w-full md:w-1/3 flex flex-col gap-3 md:min-h-0">
-            <div class="bg-white p-4 md:p-6 rounded-3xl border-2 border-orange-300 shadow-md relative flex flex-col justify-center min-h-[160px] md:min-h-[220px] shrink-0">
-                <h3 id="reference-title" class="font-bold text-orange-600 mb-2 text-center text-xs md:text-sm">기준 비율 (2:3)</h3>
-                <div id="reference-skewer-items" class="flex flex-col items-center space-y-1 relative flex-1 min-h-[100px] max-h-[140px]">
-                    <div class="skewer-line" style="width:5px;height:95%;"></div>
-                </div>
-                <p id="reference-ratio-display" class="text-center font-black text-xl md:text-2xl text-orange-700 mt-2">2 : 3</p>
+```
+<!-- Main Content -->
+<div class="flex-1 flex flex-col md:flex-row gap-4 md:min-h-0">
+    <!-- Left Column -->
+    <div class="w-full md:w-1/3 flex flex-col gap-3 md:min-h-0">
+        <div class="bg-white p-4 md:p-6 rounded-3xl border-2 border-orange-300 shadow-md relative flex flex-col justify-center min-h-[160px] md:min-h-[220px] shrink-0">
+            <h3 id="reference-title" class="font-bold text-orange-600 mb-2 text-center text-xs md:text-sm">기준 비율 (2:3)</h3>
+            <div id="reference-skewer-items" class="flex flex-col items-center space-y-1 relative flex-1 min-h-[100px] max-h-[140px]">
+                <div class="skewer-line" style="width:5px;height:95%;"></div>
             </div>
-            <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-[180px] md:min-h-0 overflow-hidden">
-                <h2 class="text-xs md:text-sm font-black text-center mb-2 text-gray-700 shrink-0">🍽️ 재료 접시</h2>
-                <div class="flex flex-col gap-2 md:gap-3 flex-1 md:min-h-0 pb-1">
-                    <div id="rice-source" onclick="addToSkewer('rice')"
-                         class="ingredient-item bg-white rounded-xl md:rounded-2xl border-2 md:border-4 border-orange-100 shadow-sm p-2 md:p-3">
-                        <div class="text-gray-800 font-black fit-text select-none">떡</div>
-                    </div>
-                    <div id="sausage-source" onclick="addToSkewer('sausage')"
-                         class="ingredient-item bg-red-50 rounded-xl md:rounded-2xl border-2 md:border-4 border-red-100 shadow-sm p-2 md:p-3">
-                        <div class="text-red-600 font-black fit-text select-none">소시지</div>
-                    </div>
-                </div>
-            </div>
+            <p id="reference-ratio-display" class="text-center font-black text-xl md:text-2xl text-orange-700 mt-2">2 : 3</p>
         </div>
-
-        <!-- Right Column -->
-        <div class="w-full md:w-2/3 flex flex-col min-h-[360px] md:min-h-0 relative">
-            <div class="absolute top-4 left-4 flex flex-col gap-3 stat-card">
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 bg-white border border-gray-300 rounded-sm"></span>
-                        <span class="text-xs md:text-sm font-bold text-gray-700">떡</span>
-                    </div>
-                    <span id="current-rice" class="text-base md:text-xl font-black text-orange-600 px-1 min-w-[28px] text-right">0</span>
+        <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-[180px] md:min-h-0 overflow-hidden">
+            <h2 class="text-xs md:text-sm font-black text-center mb-2 text-gray-700 shrink-0">🍽️ 재료 접시</h2>
+            <div class="flex flex-col gap-2 md:gap-3 flex-1 md:min-h-0 pb-1">
+                <div id="rice-source" onclick="addToSkewer('rice')"
+                     class="ingredient-item bg-white rounded-xl md:rounded-2xl border-2 md:border-4 border-orange-100 shadow-sm p-2 md:p-3">
+                    <div class="text-gray-800 font-black fit-text select-none">떡</div>
                 </div>
-                <div class="w-full h-[1px] bg-gray-100"></div>
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 bg-red-400 border border-red-500 rounded-full"></span>
-                        <span class="text-xs md:text-sm font-bold text-gray-700">소시지</span>
-                    </div>
-                    <span id="current-sausage" class="text-base md:text-xl font-black text-red-600 px-1 min-w-[28px] text-right">0</span>
-                </div>
-            </div>
-            <div class="absolute top-4 right-4 z-50 flex gap-2">
-                <button onclick="resetGame()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-1.5 rounded-lg transition-all text-xs border-b-2 border-gray-400 active:border-b-0 active:translate-y-0.5">다시 만들기</button>
-                <button onclick="checkAnswer()" class="bg-green-500 hover:bg-green-600 text-white font-black px-4 py-1.5 rounded-lg transition-all text-xs border-b-2 border-green-700 active:border-b-0 active:translate-y-0.5">꼬치 완성!</button>
-            </div>
-            <div id="drop-zone" class="relative flex flex-col items-center justify-end w-full h-full min-h-[320px] bg-orange-50 rounded-[2.5rem] border-4 border-dashed border-orange-200 p-6 shadow-inner overflow-hidden">
-                <div class="skewer-line"></div>
-                <div id="skewer-items" class="z-10 w-full flex flex-col-reverse items-center"></div>
-                <div id="drop-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none text-center p-10">
-                    <span class="text-orange-200 font-black text-base md:text-xl rotate-[-5deg]">재료를 클릭하여 꼬치를 만들어보세요!</span>
+                <div id="sausage-source" onclick="addToSkewer('sausage')"
+                     class="ingredient-item bg-red-50 rounded-xl md:rounded-2xl border-2 md:border-4 border-red-100 shadow-sm p-2 md:p-3">
+                    <div class="text-red-600 font-black fit-text select-none">소시지</div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Right Column -->
+    <div class="w-full md:w-2/3 flex flex-col min-h-[360px] md:min-h-0 relative">
+        <div class="absolute top-4 left-4 flex flex-col gap-3 stat-card">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-white border border-gray-300 rounded-sm"></span>
+                    <span class="text-xs md:text-sm font-bold text-gray-700">떡</span>
+                </div>
+                <span id="current-rice" class="text-base md:text-xl font-black text-orange-600 px-1 min-w-[28px] text-right">0</span>
+            </div>
+            <div class="w-full h-[1px] bg-gray-100"></div>
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-red-400 border border-red-500 rounded-full"></span>
+                    <span class="text-xs md:text-sm font-bold text-gray-700">소시지</span>
+                </div>
+                <span id="current-sausage" class="text-base md:text-xl font-black text-red-600 px-1 min-w-[28px] text-right">0</span>
+            </div>
+        </div>
+        <div class="absolute top-4 right-4 z-50 flex gap-2">
+            <button onclick="resetGame()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-1.5 rounded-lg transition-all text-xs border-b-2 border-gray-400 active:border-b-0 active:translate-y-0.5">다시 만들기</button>
+            <button onclick="checkAnswer()" class="bg-green-500 hover:bg-green-600 text-white font-black px-4 py-1.5 rounded-lg transition-all text-xs border-b-2 border-green-700 active:border-b-0 active:translate-y-0.5">꼬치 완성!</button>
+        </div>
+        <div id="drop-zone" class="relative flex flex-col items-center justify-end w-full h-full min-h-[320px] bg-orange-50 rounded-[2.5rem] border-4 border-dashed border-orange-200 p-6 shadow-inner overflow-hidden">
+            <div class="skewer-line"></div>
+            <div id="skewer-items" class="z-10 w-full flex flex-col-reverse items-center"></div>
+            <div id="drop-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none text-center p-10">
+                <span class="text-orange-200 font-black text-base md:text-xl rotate-[-5deg]">재료를 클릭하여 꼬치를 만들어보세요!</span>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
 </div>
 
 <!-- ══════════════════════════════════════
      SCREEN 3: 교사 화면 (탭)
 ══════════════════════════════════════ -->
+
 <div id="screen-teacher" class="screen min-h-screen md:h-screen flex-col p-4 md:p-6 md:overflow-hidden overflow-y-auto bg-blue-50">
 
-    <!-- 헤더 -->
-    <div class="flex items-center justify-between mb-3 shrink-0 flex-wrap gap-2">
-        <h1 class="text-xl font-black text-blue-900">👩‍🏫 교사 화면</h1>
-        <div class="flex gap-2 flex-wrap">
-            <button onclick="openSettings()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold px-3 py-2 rounded-xl text-sm border-b-2 border-orange-300 active:border-b-0 transition-all">⚙️ 비율 설정</button>
-            <button onclick="clearSubmissions()" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-2 rounded-xl text-sm border-b-2 border-red-300 active:border-b-0 transition-all">🗑️ 초기화</button>
-            <button onclick="goToLogin()" class="bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold px-3 py-2 rounded-xl text-sm border-b-2 border-gray-400 active:border-b-0 transition-all">나가기</button>
+```
+<!-- 헤더 -->
+<div class="flex items-center justify-between mb-3 shrink-0 flex-wrap gap-2">
+    <h1 class="text-xl font-black text-blue-900">👩‍🏫 교사 화면</h1>
+    <div class="flex gap-2 flex-wrap">
+        <button onclick="openSettings()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold px-3 py-2 rounded-xl text-sm border-b-2 border-orange-300 active:border-b-0 transition-all">⚙️ 비율 설정</button>
+        <button onclick="clearSubmissions()" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-2 rounded-xl text-sm border-b-2 border-red-300 active:border-b-0 transition-all">🗑️ 초기화</button>
+        <button onclick="goToLogin()" class="bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold px-3 py-2 rounded-xl text-sm border-b-2 border-gray-400 active:border-b-0 transition-all">나가기</button>
+    </div>
+</div>
+
+<!-- 탭 버튼 -->
+<div class="flex gap-2 mb-3 shrink-0">
+    <button id="tab-btn-monitor" onclick="switchTeacherTab('monitor')"
+            class="px-5 py-2 rounded-xl font-black text-sm border-b-4 transition-all bg-blue-500 text-white border-blue-700">
+        📊 모니터링
+    </button>
+    <button id="tab-btn-game" onclick="switchTeacherTab('game')"
+            class="px-5 py-2 rounded-xl font-black text-sm border-b-4 transition-all bg-white text-blue-600 border-blue-200 hover:bg-blue-50">
+        🍡 소떡소떡 만들기
+    </button>
+</div>
+
+<!-- ── TAB: 모니터링 ── -->
+<div id="teacher-tab-monitor" class="flex-1 flex flex-col min-h-0">
+    <!-- 통계 요약 -->
+    <div class="flex gap-3 mb-4 shrink-0 flex-wrap">
+        <div class="bg-white rounded-2xl border-2 border-blue-200 px-5 py-3 shadow-sm flex flex-col items-center min-w-[72px]">
+            <span id="stat-total" class="text-2xl font-black text-blue-700">0</span>
+            <span class="text-xs text-gray-400 font-bold">전체 제출</span>
+        </div>
+        <div class="bg-white rounded-2xl border-2 border-orange-200 px-5 py-3 shadow-sm flex flex-col items-center min-w-[72px]">
+            <span id="stat-ratio" class="text-lg font-black text-orange-700">2:3</span>
+            <span class="text-xs text-gray-400 font-bold">목표 비율</span>
         </div>
     </div>
-
-    <!-- 탭 버튼 -->
-    <div class="flex gap-2 mb-3 shrink-0">
-        <button id="tab-btn-monitor" onclick="switchTeacherTab('monitor')"
-                class="px-5 py-2 rounded-xl font-black text-sm border-b-4 transition-all bg-blue-500 text-white border-blue-700">
-            📊 모니터링
-        </button>
-        <button id="tab-btn-game" onclick="switchTeacherTab('game')"
-                class="px-5 py-2 rounded-xl font-black text-sm border-b-4 transition-all bg-white text-blue-600 border-blue-200 hover:bg-blue-50">
-            🍡 소떡소떡 만들기
-        </button>
-    </div>
-
-    <!-- ── TAB: 모니터링 ── -->
-    <div id="teacher-tab-monitor" class="flex-1 flex flex-col min-h-0">
-        <!-- 통계 요약 -->
-        <div class="flex gap-3 mb-4 shrink-0 flex-wrap">
-            <div class="bg-white rounded-2xl border-2 border-blue-200 px-5 py-3 shadow-sm flex flex-col items-center min-w-[72px]">
-                <span id="stat-total" class="text-2xl font-black text-blue-700">0</span>
-                <span class="text-xs text-gray-400 font-bold">전체 제출</span>
-            </div>
-            <div class="bg-white rounded-2xl border-2 border-orange-200 px-5 py-3 shadow-sm flex flex-col items-center min-w-[72px]">
-                <span id="stat-ratio" class="text-lg font-black text-orange-700">2:3</span>
-                <span class="text-xs text-gray-400 font-bold">목표 비율</span>
-            </div>
+    <!-- 제출 목록 -->
+    <div class="flex-1 bg-white rounded-3xl border-2 border-blue-200 shadow-md overflow-hidden flex flex-col min-h-[400px] md:min-h-0">
+        <div class="px-5 py-4 border-b border-blue-100 bg-blue-50 shrink-0">
+            <h2 class="text-sm font-black text-blue-900">학생 제출 카드 (정답만 표시)</h2>
+            <p class="text-xs font-bold text-blue-400 mt-1">카드를 누르면 완성한 소떡소떡을 크게 볼 수 있어요.</p>
         </div>
-        <!-- 제출 목록 -->
-        <div class="flex-1 bg-white rounded-3xl border-2 border-blue-200 shadow-md overflow-hidden flex flex-col min-h-[400px] md:min-h-0">
-            <div class="px-5 py-4 border-b border-blue-100 bg-blue-50 shrink-0">
-                <h2 class="text-sm font-black text-blue-900">학생 제출 카드</h2>
-                <p class="text-xs font-bold text-blue-400 mt-1">카드를 누르면 완성한 소떡소떡을 크게 볼 수 있어요.</p>
-            </div>
-            <div id="submissions-list" class="flex-1 overflow-y-auto relative p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 content-start" style="grid-auto-rows: 360px; align-items: start;">
-                <div id="no-submissions" class="absolute inset-0 flex items-center justify-center text-gray-300 font-black">
-                    아직 제출한 학생이 없어요 👀
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ── TAB: 소떡소떡 만들기 (교사용, t- 접두사) ── -->
-    <div id="teacher-tab-game" class="hidden flex-1 flex flex-col md:flex-row gap-4 md:min-h-0">
-        <!-- Left Column -->
-        <div class="w-full md:w-1/3 flex flex-col gap-3 md:min-h-0">
-            <div class="bg-white p-4 md:p-6 rounded-3xl border-2 border-orange-300 shadow-md relative flex flex-col justify-center min-h-[160px] md:min-h-[220px] shrink-0">
-                <h3 id="t-reference-title" class="font-bold text-orange-600 mb-2 text-center text-xs md:text-sm">기준 비율 (2:3)</h3>
-                <div id="t-reference-skewer-items" class="flex flex-col items-center space-y-1 relative flex-1 min-h-[100px] max-h-[140px]">
-                    <div class="skewer-line" style="width:5px;height:95%;"></div>
-                </div>
-                <p id="t-reference-ratio-display" class="text-center font-black text-xl md:text-2xl text-orange-700 mt-2">2 : 3</p>
-            </div>
-            <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-[180px] md:min-h-0 overflow-hidden">
-                <h2 class="text-xs md:text-sm font-black text-center mb-2 text-gray-700 shrink-0">🍽️ 재료 접시</h2>
-                <div class="flex flex-col gap-2 md:gap-3 flex-1 md:min-h-0 pb-1">
-                    <div id="t-rice-source" onclick="tAddToSkewer('rice')"
-                         class="ingredient-item bg-white rounded-xl md:rounded-2xl border-2 md:border-4 border-orange-100 shadow-sm p-2 md:p-3">
-                        <div class="text-gray-800 font-black fit-text select-none">떡</div>
-                    </div>
-                    <div id="t-sausage-source" onclick="tAddToSkewer('sausage')"
-                         class="ingredient-item bg-red-50 rounded-xl md:rounded-2xl border-2 md:border-4 border-red-100 shadow-sm p-2 md:p-3">
-                        <div class="text-red-600 font-black fit-text select-none">소시지</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Right Column -->
-        <div class="w-full md:w-2/3 flex flex-col min-h-[360px] md:min-h-0 relative">
-            <div class="absolute top-4 left-4 flex flex-col gap-3 stat-card">
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 bg-white border border-gray-300 rounded-sm"></span>
-                        <span class="text-xs md:text-sm font-bold text-gray-700">떡</span>
-                    </div>
-                    <span id="t-current-rice" class="text-base md:text-xl font-black text-orange-600 px-1 min-w-[28px] text-right">0</span>
-                </div>
-                <div class="w-full h-[1px] bg-gray-100"></div>
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 bg-red-400 border border-red-500 rounded-full"></span>
-                        <span class="text-xs md:text-sm font-bold text-gray-700">소시지</span>
-                    </div>
-                    <span id="t-current-sausage" class="text-base md:text-xl font-black text-red-600 px-1 min-w-[28px] text-right">0</span>
-                </div>
-            </div>
-            <div class="absolute top-4 right-4 z-50 flex gap-2">
-                <button onclick="tResetGame()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-1.5 rounded-lg transition-all text-xs border-b-2 border-gray-400 active:border-b-0 active:translate-y-0.5">다시 만들기</button>
-                <button onclick="tCheckAnswer()" class="bg-green-500 hover:bg-green-600 text-white font-black px-4 py-1.5 rounded-lg transition-all text-xs border-b-2 border-green-700 active:border-b-0 active:translate-y-0.5">꼬치 완성!</button>
-            </div>
-            <div class="relative flex flex-col items-center justify-end w-full h-full bg-orange-50 rounded-[2.5rem] border-4 border-dashed border-orange-200 p-6 shadow-inner overflow-hidden">
-                <div class="skewer-line"></div>
-                <div id="t-skewer-items" style="display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;gap:4px;width:100%;height:100%;padding-bottom:30px;padding-top:60px;" class="z-10 w-full"></div>
-                <div id="t-drop-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none text-center p-10">
-                    <span class="text-orange-200 font-black text-base md:text-xl rotate-[-5deg]">재료를 클릭하여 꼬치를 만들어보세요!</span>
-                </div>
+        <div id="submissions-list" class="flex-1 overflow-y-auto relative p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 content-start" style="grid-auto-rows: 360px; align-items: start;">
+            <div id="no-submissions" class="absolute inset-0 flex items-center justify-center text-gray-300 font-black">
+                아직 제출한 학생이 없어요 👀
             </div>
         </div>
     </div>
 </div>
 
+<!-- ── TAB: 소떡소떡 만들기 (교사용, t- 접두사) ── -->
+<div id="teacher-tab-game" class="hidden flex-1 flex flex-col md:flex-row gap-4 md:min-h-0">
+    <!-- Left Column -->
+    <div class="w-full md:w-1/3 flex flex-col gap-3 md:min-h-0">
+        <div class="bg-white p-4 md:p-6 rounded-3xl border-2 border-orange-300 shadow-md relative flex flex-col justify-center min-h-[160px] md:min-h-[220px] shrink-0">
+            <h3 id="t-reference-title" class="font-bold text-orange-600 mb-2 text-center text-xs md:text-sm">기준 비율 (2:3)</h3>
+            <div id="t-reference-skewer-items" class="flex flex-col items-center space-y-1 relative flex-1 min-h-[100px] max-h-[140px]">
+                <div class="skewer-line" style="width:5px;height:95%;"></div>
+            </div>
+            <p id="t-reference-ratio-display" class="text-center font-black text-xl md:text-2xl text-orange-700 mt-2">2 : 3</p>
+        </div>
+        <div class="bg-white rounded-3xl p-3 md:p-4 shadow-lg border-b-4 border-gray-200 flex-1 flex flex-col min-h-[180px] md:min-h-0 overflow-hidden">
+            <h2 class="text-xs md:text-sm font-black text-center mb-2 text-gray-700 shrink-0">🍽️ 재료 접시</h2>
+            <div class="flex flex-col gap-2 md:gap-3 flex-1 md:min-h-0 pb-1">
+                <div id="t-rice-source" onclick="tAddToSkewer('rice')"
+                     class="ingredient-item bg-white rounded-xl md:rounded-2xl border-2 md:border-4 border-orange-100 shadow-sm p-2 md:p-3">
+                    <div class="text-gray-800 font-black fit-text select-none">떡</div>
+                </div>
+                <div id="t-sausage-source" onclick="tAddToSkewer('sausage')"
+                     class="ingredient-item bg-red-50 rounded-xl md:rounded-2xl border-2 md:border-4 border-red-100 shadow-sm p-2 md:p-3">
+                    <div class="text-red-600 font-black fit-text select-none">소시지</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Right Column -->
+    <div class="w-full md:w-2/3 flex flex-col min-h-[360px] md:min-h-0 relative">
+        <div class="absolute top-4 left-4 flex flex-col gap-3 stat-card">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-white border border-gray-300 rounded-sm"></span>
+                    <span class="text-xs md:text-sm font-bold text-gray-700">떡</span>
+                </div>
+                <span id="t-current-rice" class="text-base md:text-xl font-black text-orange-600 px-1 min-w-[28px] text-right">0</span>
+            </div>
+            <div class="w-full h-[1px] bg-gray-100"></div>
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-red-400 border border-red-500 rounded-full"></span>
+                    <span class="text-xs md:text-sm font-bold text-gray-700">소시지</span>
+                </div>
+                <span id="t-current-sausage" class="text-base md:text-xl font-black text-red-600 px-1 min-w-[28px] text-right">0</span>
+            </div>
+        </div>
+        <div class="absolute top-4 right-4 z-50 flex gap-2">
+            <button onclick="tResetGame()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-1.5 rounded-lg transition-all text-xs border-b-2 border-gray-400 active:border-b-0 active:translate-y-0.5">다시 만들기</button>
+            <button onclick="tCheckAnswer()" class="bg-green-500 hover:bg-green-600 text-white font-black px-4 py-1.5 rounded-lg transition-all text-xs border-b-2 border-green-700 active:border-b-0 active:translate-y-0.5">꼬치 완성!</button>
+        </div>
+        <div class="relative flex flex-col items-center justify-end w-full h-full bg-orange-50 rounded-[2.5rem] border-4 border-dashed border-orange-200 p-6 shadow-inner overflow-hidden">
+            <div class="skewer-line"></div>
+            <div id="t-skewer-items" style="display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;gap:4px;width:100%;height:100%;padding-bottom:30px;padding-top:60px;" class="z-10 w-full"></div>
+            <div id="t-drop-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none text-center p-10">
+                <span class="text-orange-200 font-black text-base md:text-xl rotate-[-5deg]">재료를 클릭하여 꼬치를 만들어보세요!</span>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+</div>
+
 <!-- ══════════════════════════════════════
      MODAL: 피드백
 ══════════════════════════════════════ -->
+
 <div id="feedback-overlay" class="hidden fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-[1000]">
     <div class="bg-white p-8 rounded-[3rem] shadow-2xl flex flex-col items-center animate-pop border-4 border-orange-400 max-w-[90%]">
         <div id="feedback-icon" class="text-6xl mb-3"></div>
@@ -328,6 +342,7 @@
 <!-- ══════════════════════════════════════
      MODAL: 제출 꼬치 크게 보기
 ══════════════════════════════════════ -->
+
 <div id="submission-preview-overlay" class="hidden fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[2500] p-4">
     <div class="bg-white rounded-[2rem] shadow-2xl border-4 border-blue-300 w-full max-w-md h-[90vh] flex flex-col overflow-hidden animate-pop">
         <div class="flex items-center justify-between px-5 py-4 border-b border-blue-100 bg-blue-50 shrink-0">
@@ -347,6 +362,7 @@
 <!-- ══════════════════════════════════════
      MODAL: 비율 설정
 ══════════════════════════════════════ -->
+
 <div id="settings-overlay" class="hidden fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-[2000]">
     <div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center border-4 border-orange-400 max-w-[90%] w-80 animate-pop overflow-y-auto" style="max-height:90vh">
         <div class="text-3xl mb-2">⚙️</div>
@@ -371,9 +387,6 @@
 </div>
 
 <script>
-// ================================================================
-// ★★ Firebase 설정 — 아래를 본인 프로젝트 값으로 교체하세요 ★★
-// ================================================================
 const firebaseConfig = {
   apiKey: "AIzaSyC7RTOfRrV8f63gj-TOz6LDhJxHHSy1L_c",
   authDomain: "soddeok-45b8c.firebaseapp.com",
@@ -384,9 +397,7 @@ const firebaseConfig = {
   appId: "1:377106230675:web:b6664370bc04ba3795cc66"
 };
 
-// ★ 교사 비밀번호 (원하는 값으로 변경) ★
 const TEACHER_PASSWORD = "0009";
-// ================================================================
 
 const MAX_INDIVIDUAL_INGREDIENT = 30;
 const MAX_TOTAL_ON_SKEWER = 60;
@@ -407,14 +418,12 @@ function safeSetText(id, value) {
     if (el) el.innerText = value;
 }
 
-// ── Firebase 초기화 ──────────────────────────────────────
 try {
     if (firebaseConfig.apiKey && firebaseConfig.databaseURL) {
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
         firebaseReady = true;
 
-        // 교사가 설정한 비율을 모든 학생 화면에 실시간 반영
         db.ref('targetRatio').on('value', snap => {
             try {
                 const val = snap.val();
@@ -445,7 +454,6 @@ try {
     document.getElementById('firebase-warning').classList.remove('hidden');
 }
 
-// ── 화면 전환 ────────────────────────────────────────────
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -459,7 +467,6 @@ function goToLogin() {
     document.getElementById('pw-error').classList.add('hidden');
 }
 
-// ── 로그인 ───────────────────────────────────────────────
 function showStudentLogin() {
     document.getElementById('student-login-form').classList.remove('hidden');
     document.getElementById('teacher-login-form').classList.add('hidden');
@@ -497,7 +504,6 @@ function loginTeacher() {
     }
 }
 
-// ── 게임 로직 ────────────────────────────────────────────
 const skewerContainer  = document.getElementById('skewer-items');
 const currentRiceEl    = document.getElementById('current-rice');
 const currentSausageEl = document.getElementById('current-sausage');
@@ -553,6 +559,7 @@ function updateCounts() {
     sausageSource.classList.toggle('disabled', s >= MAX_INDIVIDUAL_INGREDIENT);
 }
 
+// ★★★ 핵심 수정 부분: 정답일 때만 Firebase에 제출 ★★★
 function checkAnswer() {
     const r = skewerList.filter(i => i === 'rice').length;
     const s = skewerList.filter(i => i === 'sausage').length;
@@ -566,6 +573,7 @@ function checkAnswer() {
     const text    = document.getElementById('feedback-text');
     const sub     = document.getElementById('feedback-subtext');
 
+    // 이미 정답 제출한 경우
     if (submittedRoundId === roundId) {
         overlay.classList.remove('hidden');
         lockScroll();
@@ -576,6 +584,20 @@ function checkAnswer() {
         return;
     }
 
+    const isCorrect = r > 0 && s > 0 && (r * targetSausage === s * targetRice);
+
+    // 오답이면 피드백만 보여주고 Firebase 제출 안 함
+    if (!isCorrect) {
+        overlay.classList.remove('hidden');
+        lockScroll();
+        icon.innerText = '🧐';
+        text.innerText = '비율을 다시 맞춰볼까요?';
+        text.style.color = '#dc2626';
+        sub.innerText = `현재 떡과 소시지의 비는 ${r}:${s}예요. (목표 ${targetRice}:${targetSausage})`;
+        return; // 여기서 종료 → 제출 안 됨
+    }
+
+    // Firebase 연결 확인
     if (!firebaseReady || !studentName) {
         overlay.classList.remove('hidden');
         lockScroll();
@@ -586,14 +608,13 @@ function checkAnswer() {
         return;
     }
 
-    const isCorrect = r > 0 && s > 0 && (r * targetSausage === s * targetRice);
-
+    // 정답이면 Firebase에 제출
     db.ref('submissions').push({
         name: studentName,
         rice: r,
         sausage: s,
         items: skewerList.slice(),
-        isCorrect,
+        isCorrect: true,
         ratioRice: targetRice,
         ratioSausage: targetSausage,
         ratioKey: currentRatioKey,
@@ -603,10 +624,10 @@ function checkAnswer() {
         submittedRoundId = roundId;
         overlay.classList.remove('hidden');
         lockScroll();
-        icon.innerText = '📨';
-        text.innerText = '선생님께 전달되었어요!';
-        text.style.color = '#2563eb';
-        sub.innerText = '이 비율에서는 한 번만 제출할 수 있어요.';
+        icon.innerText = '✨';
+        text.innerText = '비의 성질 완성!';
+        text.style.color = '#16a34a';
+        sub.innerText = `떡 ${r}개와 소시지 ${s}개는 ${targetRice}:${targetSausage}과 비율이 같아요!`;
     }).catch(error => {
         console.warn('학생 제출 저장 실패:', error);
         overlay.classList.remove('hidden');
@@ -624,7 +645,6 @@ function resetGame() {
     updateCounts();
 }
 
-// ── 기준 꼬치 렌더링 ─────────────────────────────────────
 function buildSequence(r, s) {
     const seq = [];
     let ri = 0, si = 0;
@@ -659,9 +679,6 @@ function renderReferenceSkewer() {
     if (typeof tRenderReferenceSkewer === 'function') tRenderReferenceSkewer();
 }
 
-// ── 교사 대시보드 ────────────────────────────────────────
-let submissionsListenerAttached = false;
-let submissionsRef = null;
 let submissionsPollTimer = null;
 
 function refreshSubmissions() {
@@ -680,7 +697,6 @@ function refreshSubmissions() {
             window.allSubmissions = list;
             window.latestSubmissions = list;
             renderSubmissions(list);
-            console.log('제출 목록 직접 fetch 갱신:', list.length, list);
         })
         .catch(error => {
             console.warn('제출 목록 fetch 갱신 실패:', error);
@@ -689,11 +705,7 @@ function refreshSubmissions() {
 
 function listenSubmissions(force = false) {
     refreshSubmissions();
-
-    if (submissionsPollTimer) {
-        clearInterval(submissionsPollTimer);
-    }
-
+    if (submissionsPollTimer) clearInterval(submissionsPollTimer);
     submissionsPollTimer = setInterval(refreshSubmissions, 1000);
 }
 
@@ -748,7 +760,7 @@ function renderSubmissions(list) {
                         <div class="text-lg font-black text-gray-800 truncate">${safeName}</div>
                         <div class="text-xs font-bold text-gray-400 mt-1">${submittedTime ? `${submittedTime} 제출` : '제출 완료'}</div>
                     </div>
-                    <div class="shrink-0 bg-blue-100 group-hover:bg-blue-200 text-blue-700 text-xs font-black px-3 py-1 rounded-full">보기</div>
+                    <div class="shrink-0 bg-green-100 text-green-700 text-xs font-black px-3 py-1 rounded-full">✅ 정답</div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2">
@@ -774,6 +786,7 @@ function renderSubmissions(list) {
         `;
     }).join('');
 }
+
 function openSubmissionPreviewByKey(key) {
     const list = window.latestSubmissions || [];
     const index = list.findIndex(s => s.key === key);
@@ -790,10 +803,7 @@ function buildItemsFromCounts(rice, sausage) {
 function openSubmissionPreview(index) {
     const list = window.latestSubmissions || [];
     const submission = list[index];
-    if (!submission) {
-        console.warn('크게 볼 제출 데이터를 찾지 못했습니다:', index, list);
-        return;
-    }
+    if (!submission) return;
 
     const items = Array.isArray(submission.items)
         ? submission.items
@@ -824,7 +834,6 @@ function clearSubmissions() {
     });
 }
 
-// ── 스크롤 잠금 ──────────────────────────────────────────
 let _stScrollTop = 0;
 function lockScroll() {
     document.body.style.overflow = 'hidden';
@@ -844,7 +853,6 @@ function unlockScroll() {
     }
 }
 
-// ── 비율 설정 모달 ───────────────────────────────────────
 function openSettings() {
     document.getElementById('input-rice').value = targetRice;
     document.getElementById('input-sausage').value = targetSausage;
@@ -899,12 +907,11 @@ function applySettings() {
             })
             .catch(error => {
                 console.warn('비율 저장 또는 제출 초기화 실패:', error);
-                alert('비율은 화면에 적용됐지만, Firebase 저장에 실패했어요. 규칙 또는 연결 상태를 확인해주세요.');
+                alert('비율은 화면에 적용됐지만, Firebase 저장에 실패했어요.');
             });
     }
 }
 
-// ── 교사 탭 전환 ─────────────────────────────────────────
 function switchTeacherTab(tab) {
     const isMonitor = tab === 'monitor';
     document.getElementById('teacher-tab-monitor').classList.toggle('hidden', !isMonitor);
@@ -922,7 +929,6 @@ function switchTeacherTab(tab) {
     }
 }
 
-// ── 교사용 게임 로직 (t- 접두사) ─────────────────────────
 let tSkewerList = [];
 
 const tSkewerContainer  = document.getElementById('t-skewer-items');
@@ -1026,10 +1032,10 @@ function tRenderReferenceSkewer() {
     document.getElementById('t-reference-ratio-display').innerText = `${targetRice} : ${targetSausage}`;
 }
 
-// ── 초기 렌더 ────────────────────────────────────────────
 renderReferenceSkewer();
 tRenderReferenceSkewer();
 window.addEventListener('resize', () => { renderSkewer(); tRenderSkewer(); });
 </script>
+
 </body>
 </html>
